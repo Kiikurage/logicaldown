@@ -1,0 +1,74 @@
+{
+  function join(parts, delimiter) {
+    return parts.join(delimiter || '');
+  }
+}
+
+start
+  = components:block* { return join(components); }
+  
+/*--------------------------------------------------------------------------------
+ * BLOCK COMPONENTS
+ */
+
+block
+  = eol
+  / h1 / h2 / h3 / h4 / h5 / h6
+  / list_item
+  / compoennts:(inline)+ { return join(compoennts); }
+  
+h1
+  = "#" !"#" components:inline+ { return '<h1>' + join(components) + '</h1>'; }
+  
+h2
+  = "##" !"#" components:inline+ { return '<h2>' + join(components) + '</h2>'; }
+  
+h3
+  = "###" !"#" components:inline+ { return '<h3>' + join(components) + '</h3>'; }
+  
+h4
+  = "####" !"#" components:inline+ { return '<h4>' + join(components) + '</h4>'; }
+  
+h5
+  = "#####" !"#" components:inline+ { return '<h5>' + join(components) + '</h5>'; }
+  
+h6
+  = "######" !"#" components:inline+ { return '<h6>' + join(components) + '</h6>'; }
+
+list_item
+  = "-" !"-" components:inline+ { return '<li>' + join(components) + '</li>'; }
+
+/*--------------------------------------------------------------------------------
+ * INLINE COMPONENTS
+ */
+
+inline
+  = inline_notrim:inline_notrim+ { return join(inline_notrim).trim(); }
+
+inline_notrim
+  = bold
+  / italic
+  / texts:text
+    
+bold
+  = "**" val:[^\*\n]+ "**" { return '<b>' + join(val) + '</b>'; }
+
+italic
+  = "*" val:[^\*\n]+ "*" { return '<i>' + join(val) + '</i>'; }
+
+text
+  = space
+  / other 
+  
+/*--------------------------------------------------------------------------------
+ * TOKENS
+ */
+
+eol
+  = "\n"
+  
+space
+  = [\t ]
+  
+other
+  = [^\n\t ]
